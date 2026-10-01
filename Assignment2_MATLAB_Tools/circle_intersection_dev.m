@@ -2,20 +2,26 @@ clearvars;
 close all;
 clc;
 
-circle_intersection_bounds([1, 2], [3, 2.6], [.5, 2.6], 1);
+circle_intersection_bounds([1, 2], [1, 0], [1, 4], 1);
 
 function y = sgn_star(x)
-% Exercise 1.1: sgn* implementation
-%%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
-
-%%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
+    % Exercise 1.1: sgn* implementation
+    %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+    
+    if x<0 
+        y=-1;
+    else
+        y=1;
+    end
+    
+    %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
 end
 
 function draw_circle(a, b, r)
     theta = linspace(0, 2*pi, 100);
     x = a + r*cos(theta);
     y = b + r*sin(theta);
-    plot(x , y, 'k--', 'LineWidth' , 2);
+    plot(x , y, 'w--', 'LineWidth' , 2);
 end
 
 function circle_intersection_bounds(Pose, waypoint1, waypoint2, lookahead_dist)
@@ -45,11 +51,21 @@ function circle_intersection_bounds(Pose, waypoint1, waypoint2, lookahead_dist)
     % to the 'print' statement seen below.
     %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
 
+    r = lookahead_dist;
+
+    dx = x2_offset - x1_offset;
+    dy = y2_offset - y1_offset;
+
+    dr_sq = dx*dx + dy*dy; % removed sqrt for optimalisation.
+
+    D = x1_offset * y2_offset - x2_offset * y1_offset;
+    delta = r*r * dr_sq - D*D;
+
     %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
     fprintf("dx: " + dx + "\n");
     fprintf("dy: " + dy + "\n");
     fprintf("dy: " + dy + "\n");
-    fprintf("dr: " + dr + "\n");
+    fprintf("dr^2: " + dr_sq + "\n");
     fprintf("D: " + D + "\n");
     fprintf("delta: " + delta + "\n");
     
@@ -57,17 +73,23 @@ function circle_intersection_bounds(Pose, waypoint1, waypoint2, lookahead_dist)
         % Exercise 1.3: implement the Circle-Line Intersection math from
         % Intermezzo 1 eq 6 and 7
         %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+        
+        x1_intersect = (D * dy - sgn_star(dy) * dx * sqrt(delta)) / dr_sq;
+        x2_intersect = (D * dy + sgn_star(dy) * dx * sqrt(delta)) / dr_sq;
+
+        y1_intersect = (-D*dx - abs(dy)*sqrt(delta)) / dr_sq;
+        y2_intersect = (-D*dx + abs(dy)*sqrt(delta)) / dr_sq;
 
         %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
         fprintf("x1_intersect: " + x1_intersect + "\n");
         fprintf("x2_intersect: " + x2_intersect + "\n");
-        fprintf("y1_interesct: " + y1_interesct + "\n");
-        fprintf("y2_interesct: " + y2_interesct + "\n");
+        fprintf("y1_intersect: " + y1_intersect + "\n");
+        fprintf("y2_intersect: " + y2_intersect + "\n");
         
         % Add 'currentX' and 'currentY'. Offset the system back to its original position
-        intersention_1 = [x1_intersect+currentX y1_interesct+currentY];
+        intersention_1 = [x1_intersect+currentX y1_intersect+currentY];
         fprintf("intersention_1: (%.2f, %.2f)\n", intersention_1(1), intersention_1(2));
-        intersention_2 = [x2_intersect+currentX y2_interesct+currentY];
+        intersention_2 = [x2_intersect+currentX y2_intersect+currentY];
         fprintf("intersention_2: (%.2f, %.2f)\n", intersention_2(1), intersention_2(2));
         
         minX = min(x1, x2);
@@ -77,6 +99,9 @@ function circle_intersection_bounds(Pose, waypoint1, waypoint2, lookahead_dist)
         
         % Exercise 1.4: Conditions for intersections to be in range
         %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+
+        intersec1_in_range = (minX - currentX)^2 + (minY - currentY)^2 >= r^2;
+        intersec2_in_range = (maxX - currentX)^2 + (maxY - currentY)^2 >= r^2;
 
         %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
 
