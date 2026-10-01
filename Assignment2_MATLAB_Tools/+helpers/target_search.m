@@ -1,0 +1,81 @@
+function [target_point, lastFoundIndex] = target_search(path, currentPose, lookahead_dist, lastFoundIndex)
+    currentX = currentPose(1);
+    currentY = currentPose(2);
+
+    target_point = [NaN NaN];
+    startIndex = lastFoundIndex;
+
+    for i = startIndex:(length(path) - 1)
+        % Step 1. Offset the circle to the origin
+        x1 = path(i,1);
+        y1 = path(i,2);
+        x2 = path(i+1,1);
+        y2 = path(i+1,2);
+        % zeroed out coordinates of the current pose
+        x10 = x1 - currentX;
+        y10 = y1 - currentY;
+        x20 = x2 - currentX;
+        y20 = y2 - currentY;
+
+        dx = x20 - x10;
+        dy = y20 - y10;
+        dr = sqrt(dx^2 + dy^2);
+        D = x10*y20 - x20*y10;
+        delta = lookahead_dist^2*dr^2 - D^2;
+
+        if delta >= 0
+            % Step 3. Compute points of intersection
+            x1_intersect = (D*dy + helpers.sgn_star(dy)*dx*sqrt(delta))/dr^2;
+            x2_intersect = (D*dy - helpers.sgn_star(dy)*dx*sqrt(delta))/dr^2;
+            y1_interesct = (-D*dx + abs(dy)*sqrt(delta))/dr^2;
+            y2_interesct = (-D*dx - abs(dy)*sqrt(delta))/dr^2;
+            % Step 4. Add 'currentX' and 'currentY'. Offset the system back to its original position
+            intersention_1 = [x1_intersect+currentX y1_interesct+currentY];
+            intersention_2 = [x2_intersect+currentX y2_interesct+currentY];
+            
+            % IMPORTANT max min are now defined by reference path segments
+            minX = min(path(i,1), path(i+1,1));
+            maxX = max(path(i,1), path(i+1,1));
+            minY = min(path(i,2), path(i+1,2));
+            maxY = max(path(i,2), path(i+1,2));
+            
+            % Exercise 2.2: reuse the statement from Exercise 1.4
+            %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+
+            %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
+            if intersec1_in_range || intersec2_in_range
+%                 intersectionFound = true;
+
+                if intersec1_in_range && intersec2_in_range %% both solutions in range
+                    % Exercise 2.3: Take the closer intersection as a target
+                    %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+
+                    %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
+                else
+                    % Exercise 2.4: Take the intersection that is within range
+                    %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+
+                    %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
+                end
+                % Exercise 2.5: Determine whether a segment has been passed.
+                % Depending on the outcome either stay on it or move the search forward
+                % to the next segment and keep looping
+                %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+                if helpers.euclidean_distance(target_point,  path(i+1,:)) < ...
+                   helpers.euclidean_distance([currentX currentY], path(i+1,:))   
+                    lastFoundIndex = i; % stay on this segment
+                    break % we've found a good target
+                else
+                    lastFoundIndex = i+1; % move search foward to the next segment and KEEP LOOPING
+                end
+                %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
+            else % no intersections found
+                % NO target point found; potentially deviated from the path
+                % Exercise 2.6: As a backup go to the end of the current segment
+                %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+
+                %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
+            end                
+        end
+    end
+end
