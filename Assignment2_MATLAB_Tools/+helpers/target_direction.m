@@ -4,7 +4,11 @@ function alpha = target_direction(target_point, currentPose)
     % Exercise 3.1 Target direction alpha implementation
     %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
 
-    % Normailze alpha to (-pi, pi] 
+    theta = atan2(targetY - currentY, targetX - currentX);
+    a = theta - currentPSI;
 
+    % Normailze alpha to (-pi, pi] 
+    alpha = mod(a + pi, 2*pi) - pi;
+    
     %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
 end

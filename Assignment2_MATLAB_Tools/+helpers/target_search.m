@@ -42,6 +42,9 @@ function [target_point, lastFoundIndex] = target_search(path, currentPose, looka
             % Exercise 2.2: reuse the statement from Exercise 1.4
             %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
 
+            intersec1_in_range = (minX - currentX)^2 + (minY - currentY)^2 >= lookahead_dist^2;
+            intersec2_in_range = (maxX - currentX)^2 + (maxY - currentY)^2 >= lookahead_dist^2;
+
             %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
             if intersec1_in_range || intersec2_in_range
 %                 intersectionFound = true;
@@ -49,11 +52,24 @@ function [target_point, lastFoundIndex] = target_search(path, currentPose, looka
                 if intersec1_in_range && intersec2_in_range %% both solutions in range
                     % Exercise 2.3: Take the closer intersection as a target
                     %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+                    
+                    if (minX - currentX)^2 + (minY - currentY)^2 < (maxX - currentX)^2 + (maxY - currentY)^2
+                        target_point = intersention_1;
+                    else
+                        target_point = intersention_2;
+                    end
 
                     %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
                 else
                     % Exercise 2.4: Take the intersection that is within range
                     %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
+                    
+                    if intersec1_in_range
+                        target_point = intersention_1;
+                    end
+                    if intersec2_in_range
+                        target_point = intersention_2;
+                    end
 
                     %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
                 end
@@ -73,7 +89,7 @@ function [target_point, lastFoundIndex] = target_search(path, currentPose, looka
                 % NO target point found; potentially deviated from the path
                 % Exercise 2.6: As a backup go to the end of the current segment
                 %%%%%%%%%%%% YOUR CODE: START %%%%%%%%%%%%%
-
+                target_point = path(lastFoundIndex+1);
                 %%%%%%%%%%%%  YOUR CODE: END  %%%%%%%%%%%%%
             end                
         end
